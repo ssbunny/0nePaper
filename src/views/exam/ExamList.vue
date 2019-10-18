@@ -91,15 +91,17 @@
         </el-collapse>
 
         <SubjectSelector ref="subjectSelector" @ok="onSubjectSelected"/>
+        <CandidateSelector ref="candidateSelector" @ok="onCandidateSelected"/>
     </section>
 </template>
 
 
 <script>
     import SubjectSelector from '../../components/SubjectSelector.vue';
+    import CandidateSelector from '../../components/CandidateSelector.vue';
 
     export default {
-        components: {SubjectSelector},
+        components: {SubjectSelector, CandidateSelector},
         data () {
             return {
                 query: {},
@@ -138,13 +140,17 @@
             },
             onAddSubject(e, exam) {
                 e.stopPropagation();
-                this.$refs.subjectSelector.show(['1','3']);
+                this.$refs.subjectSelector.show(['1', '3']);
             },
             onSubjectSelected (boxes) {
                 // TODO 提交
             },
             onAddCandidate(e, exam) {
                 e.stopPropagation();
+                this.$refs.candidateSelector.show();
+            },
+            onCandidateSelected () {
+
             },
             onDelete(e, exam) {
                 e.stopPropagation();

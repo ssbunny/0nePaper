@@ -51,7 +51,16 @@
                     {autoId: '6', name: '英语'},
                     {autoId: '7', name: '音乐'},
                     {autoId: '8', name: '大学生就业指南'},
-                    {autoId: '9', name: '吃喝玩乐'}
+                    {autoId: '9', name: '吃喝玩乐'},
+                    {autoId: '10', name: '语文'},
+                    {autoId: '20', name: '数学'},
+                    {autoId: '30', name: '哲学'},
+                    {autoId: '40', name: '职业与人文素养'},
+                    {autoId: '50', name: '历史'},
+                    {autoId: '60', name: '英语'},
+                    {autoId: '70', name: '音乐'},
+                    {autoId: '80', name: '大学生就业指南'},
+                    {autoId: '90', name: '吃喝玩乐'}
                 ];
                 res.forEach(item => {
                     item.checked = this._initData.includes(item.autoId);
