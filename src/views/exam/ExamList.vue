@@ -23,9 +23,9 @@
                     <div class="title">
                         <div class="fl ml1">
                             <span class="time">[{{ e.date }}]</span>
-                            <span class="grade">({{ e.grade }}) </span>
+                            &nbsp;
                             <i class="el-icon-document icon"></i>
-                            {{ e.name }}
+                            <span class="grade">{{ e.name }}（{{ e.grade }} - {{ e.classType }}）</span>
                         </div>
                         <div class="fr mr1">
                             <el-tooltip content="刷新" :open-delay="200" :hide-after="700" placement="top">
@@ -117,15 +117,15 @@
                 ],
                 examinfoList: [
                     {
-                        autoId: '1', name: '2019年七月份月考', grade: '九年级', date: '2019-07-20',
+                        autoId: '1', name: '2019年七月份月考', classType: '文科', grade: '九年级', date: '2019-07-20',
                         subjectList: [
                             {id: '1', name: '语文'},
                             {id: '2', name: '数学'},
                             {id: '3', name: '英语'},
                         ]
                     },
-                    {autoId: '2', name: '2016年数学测试', grade: '三年级', date: '2019-01-02'},
-                    {autoId: '3', name: '一年级入学考试', grade: '一年级', date: '2019-01-02'},
+                    {autoId: '2', name: '2016年数学测试', grade: '一年级', classType: '不分文理', date: '2019-01-02'},
+                    {autoId: '3', name: '一年级入学考试', grade: '高三', date: '2019-01-02'},
                     {autoId: '4', name: '这是一个比较长的名字这是一个比较长的名字这是一个比较长的名字', grade: '九年级', date: '2019-01-02'},
                 ]
             }
@@ -180,8 +180,8 @@
     }
 
     .icon {
-        color: #5b9c63;
-        font-size: 20px;
+        color: #2E6EB1;
+        font-size: 16px;
     }
 
     .time {

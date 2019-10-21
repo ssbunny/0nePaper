@@ -23,6 +23,10 @@ module.exports = {
         'exam-list': {
             entry: 'src/pages/exam-list.js',
             title: '考试信息列表'
-        }
+        },
+        'exam-creation': {
+            entry: 'src/pages/exam-creation.js',
+            title: '创建考试'
+        },
     }
 };
