@@ -28,5 +28,9 @@ module.exports = {
             entry: 'src/pages/exam-creation.js',
             title: '创建考试'
         },
+        'exam-student': {
+            entry: 'src/pages/exam-student.js',
+            title: '选择考生'
+        }
     }
 };
