@@ -31,6 +31,10 @@ module.exports = {
         'exam-student': {
             entry: 'src/pages/exam-student.js',
             title: '选择考生'
+        },
+        'marking': {
+            entry: 'src/pages/marking.js',
+            title: '阅卷'
         }
     }
 };
