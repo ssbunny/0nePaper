@@ -1,6 +1,7 @@
 <template>
     <el-dialog title="选择题目" :visible.sync="isShow" width="950px">
         <el-cascader-panel
+                ref="cascader"
                 size="small"
                 @change="onCascaderChange"
                 :options="questions"/>
@@ -59,8 +60,9 @@
                 }]
             },
             onCascaderChange (nodes) {
-                if (nodes.length === 5) {
-                    this.$emit('ok', nodes[4]);
+                if (nodes.length === 5) {  // TODO
+                    let snode = this.$refs.cascader.getCheckedNodes();
+                    this.$emit('ok', nodes[4], snode[0].pathNodes);
                     this.isShow = false;
                 }
             }
