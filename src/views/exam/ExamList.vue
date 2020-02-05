@@ -4,11 +4,13 @@
 
         <el-form class="mt2 form" inline :model="query">
             <el-form-item>
-                <el-select v-model="query.school" style="width: 400px" filterable>
+                <el-select v-model="query.SchoolID"
+                           @change="onSchoolChange"
+                           style="width: 400px" filterable>
                     <el-option v-for="s in schoolList"
-                               :key="s.id"
-                               :label="s.name"
-                               :value="s.id"/>
+                               :key="s.AutoID"
+                               :label="s.Name"
+                               :value="s.AutoID"/>
                 </el-select>
             </el-form-item>
             <el-form-item>
@@ -16,16 +18,18 @@
             </el-form-item>
         </el-form>
 
-        <el-collapse>
-            <el-collapse-item v-for="e in examinfoList" :key="e.autoId">
+        <el-alert v-if="examinfoList.length === 0" :closable="false" title="没有考试信息" type="error" show-icon/>
+
+        <el-collapse v-else @change="onCollapseChange">
+            <el-collapse-item v-for="e in examinfoList" :key="e.AutoID">
                 <!-- 考试信息 -->
                 <template slot="title">
                     <div class="title">
                         <div class="fl ml1">
-                            <span class="time">[{{ e.date }}]</span>
+                            <span class="time">[{{ e.UpdatedTime }}]</span>
                             &nbsp;
                             <i class="el-icon-document icon"></i>
-                            <span class="grade">{{ e.name }}（{{ e.grade }} - {{ e.classType }}）</span>
+                            <span class="grade">{{ e.Name }}（{{ e.Grade || '无' }} - {{ e.ClassType || '无'}})</span>
                         </div>
                         <div class="fr mr1">
                             <el-tooltip content="刷新" :open-delay="200" :hide-after="700" placement="top">
@@ -90,6 +94,8 @@
             </el-collapse-item>
         </el-collapse>
 
+        <el-pagination layout="prev, pager, next" class="mt1" :total="page.TotalCount"/>
+
         <SubjectSelector ref="subjectSelector" @ok="onSubjectSelected"/>
         <StudentSelector ref="studentSelector" @ok="onStudentSelected"/>
     </section>
@@ -104,17 +110,18 @@
         components: {SubjectSelector, StudentSelector},
         data () {
             return {
-                query: {},
+                query: {
+                    PageNumber: 1,
+                    PageSize: 20,
+                    SchoolID: undefined
+                },
+                page: {},
                 customColors: [
                     {color: '#f56c6c', percentage: 30},
                     {color: '#e6a23c', percentage: 60},
                     {color: '#5cb87a', percentage: 100}
                 ],
-                schoolList: [
-                    {id: '1', name: '实验一小'},
-                    {id: '2', name: '实验二小'},
-                    {id: '3', name: '实验三小'}
-                ],
+                schoolList: [],
                 examinfoList: [
                     {
                         autoId: '1', name: '2019年七月份月考', classType: '文科', grade: '九年级', date: '2019-07-20',
@@ -132,8 +139,48 @@
         },
         created () {
             //this.query.school = this.schoolList[0].id;
+            this.loadSchools();
         },
         methods: {
+            loadSchools() {
+                this.$httpGet('/api/schools')
+                    .then(res => {
+                        this.schoolList = res;
+                        this.query.SchoolID = res[0].AutoID;
+                        this.loadExams();
+                    });
+            },
+            loadExams() {
+                this.$httpGet('/api/exams', this.query)
+                    .then(res => {
+                        if (res.Status ==='success') {
+                            this.examinfoList = res.ResultSet;
+                            this.page = res.Paging;
+                        }
+                    });
+            },
+            loadSubjectList(examId) {
+                this.$httpGet(`/api/exam/${examId}/subjects`)
+                    .then(res => {
+                        console.log(res)
+                        // TODO
+//                        if (res.Status ==='success') {
+//                            this.examinfoList = res.ResultSet;
+//                            this.page = res.Paging;
+//                        }
+                    });
+            },
+            onSchoolChange () {
+                this.query.PageNumber = 1;
+                this.loadExams();
+            },
+            onCollapseChange (examIds) {
+                if (examIds && examIds.length) {
+                    examIds.forEach(examId => {
+                        this.loadSubjectList(examId);
+                    });
+                }
+            },
             onRefresh(e, exam) {
                 e.stopPropagation();
                 // TODO

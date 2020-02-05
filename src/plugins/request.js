@@ -20,10 +20,10 @@ RequestPlugin.install = function (Vue) {
 
     axios.interceptors.response.use(
         response => {
-            let d = response.data;
-            //let me = response.config._this;
-
-            return d;
+            if (response.status < 400) {
+                return response.data;
+            }
+            return response;
         },
         error => {
             return error;

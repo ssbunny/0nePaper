@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 
 const HOST_PRO = '"http://192.168.1.110:808"';  // 生产环境中，API 主机地址
-const HOST_DEV = '"http://localhost:8080"';     // 开发环境中，API 主机地址
+const HOST_DEV = '"http://28986ma181.eicp.vip"';     // 开发环境中，API 主机地址
 
 const DIST_DIR = './dist';
 
@@ -35,6 +35,10 @@ module.exports = {
         'marking': {
             entry: 'src/pages/marking.js',
             title: '阅卷'
+        },
+        'check-objective': {
+            entry: 'src/pages/check-objective.js',
+            title: '客观题校验'
         }
     }
 };
