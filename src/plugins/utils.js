@@ -29,6 +29,9 @@ UtilsPlugin.install = function (Vue) {
             val = parseFloat(val);
         }
         if (Number.isNaN(val)) {
+            if (defaultVal === 0) {
+                return 0;
+            }
             return defaultVal || '--';
         }
         return val.toFixed(scale || 2);

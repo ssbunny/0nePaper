@@ -3,7 +3,7 @@
         <div class="e-header">选择考生</div>
 
         <el-alert class="mt2" type="info">
-            <span slot="title">TODO 名{{ examInfo.name }}</span>
+            <span slot="title">{{ examInfo.Name }}</span>
             <span>考试时间：{{ examInfo.date }}</span>
             <span class="ml1">文科 {{ examInfo.date }}</span>
             <span>考试时间：{{ examInfo.date }}</span>
@@ -45,7 +45,7 @@
     export default {
         data () {
             return {
-                active: '',
+                active: '',  // 当前选中的班级
                 examInfo: {},
                 classes: [],
                 btnDisabled: true,
@@ -53,26 +53,35 @@
             }
         },
         created () {
-            let id = window.location.search.substring(4);
-            // TODO
-            this.examInfo.id = id;
-
-            this.loadClasses();
+            this.examId = window.location.search.substring(3) - 0;
+            this.loadExamInfo();
         },
         methods: {
             loadExamInfo () {
-
+                this.$httpGet(`/api/exam/${this.examId}`)
+                    .then(res => {
+                        this.examInfo = res;
+                        this.loadClasses();
+                    });
             },
             loadClasses () {
-                this.classes = [
-                    {id: '1', name: '1班', candidates: [], loaded: false},
-                    {id: '2', name: '2班', candidates: [], loaded: false},
-                    {id: '3', name: '3班', candidates: [], loaded: false},
-                    {id: '4', name: '4班', candidates: [], loaded: false},
-                    {id: '5', name: '超级赛亚人班', candidates: [], loaded: false},
-                ];
-                this.active = this.classes[0].id;
-                this.loadCandidates(this.active);
+                this.$httpGet(`/api/school/${this.examInfo.SchoolID}/classes`)
+                    .then(res => {
+                        console.log(res.map(i => {
+                            return {Name: i.Name, ParentFirmID: i.ParentFirmID, AutoID: i.AutoID}
+                        }));
+                        this.classes = [
+                            {id: '1', name: '1班', candidates: [], loaded: false},
+                            {id: '2', name: '2班', candidates: [], loaded: false},
+                            {id: '3', name: '3班', candidates: [], loaded: false},
+                            {id: '4', name: '4班', candidates: [], loaded: false},
+                            {id: '5', name: '超级赛亚人班', candidates: [], loaded: false},
+                        ];
+                    });
+
+
+//                this.active = this.classes[0].id;
+//                this.loadCandidates(this.active);
             },
             loadCandidates (classId) {
                 let clazz = this.classes.find(item => item.id === classId);

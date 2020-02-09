@@ -3,7 +3,7 @@
         <div v-for="i in all" class="subject-box">
             <el-checkbox v-model="i.checked"
                          :disabled="i.disabled"
-                         :label="i.name"
+                         :label="i.Name"
                          style="width: 100%"
                          size="small"
                          border/>
@@ -41,32 +41,14 @@
                 this.loadAll();
             },
             loadAll () {
-                // this.$httpGet('')
-                let res = [
-                    {autoId: '1', name: '语文'},
-                    {autoId: '2', name: '数学'},
-                    {autoId: '3', name: '哲学'},
-                    {autoId: '4', name: '职业与人文素养'},
-                    {autoId: '5', name: '历史'},
-                    {autoId: '6', name: '英语'},
-                    {autoId: '7', name: '音乐'},
-                    {autoId: '8', name: '大学生就业指南'},
-                    {autoId: '9', name: '吃喝玩乐'},
-                    {autoId: '10', name: '语文'},
-                    {autoId: '20', name: '数学'},
-                    {autoId: '30', name: '哲学'},
-                    {autoId: '40', name: '职业与人文素养'},
-                    {autoId: '50', name: '历史'},
-                    {autoId: '60', name: '英语'},
-                    {autoId: '70', name: '音乐'},
-                    {autoId: '80', name: '大学生就业指南'},
-                    {autoId: '90', name: '吃喝玩乐'}
-                ];
-                res.forEach(item => {
-                    item.checked = this._initData.includes(item.autoId);
-                    this._unselect && (item.disabled = item.checked);
-                });
-                this.all = res;
+                this.$httpGet('/api/subjects')
+                    .then(res => {
+                        res.forEach(item => {
+                            item.checked = this._initData.includes(item.AutoID);
+                            this._unselect && (item.disabled = item.checked);
+                        });
+                        this.all = res;
+                    });
             },
             onSubmit () {
                 let boxes = {
@@ -74,7 +56,7 @@
                     remove: [],  // 从初始化数据中取消的
                     checked: []  // 最终所有选中的
                 };
-                let checked = this.all.filter(item => item.checked).map(item => item.autoId);
+                let checked = this.all.filter(item => item.checked).map(item => item.AutoID);
                 boxes.remove = this._initData.filter(item => !checked.includes(item));
                 boxes.add = checked.filter(item => !this._initData.includes(item));
                 boxes.checked = checked;

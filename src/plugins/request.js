@@ -7,7 +7,8 @@ RequestPlugin.install = function (Vue) {
 
     axios.defaults.baseURL = API_HOST;
     axios.defaults.timeout = 200000;
-    axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+    axios.defaults.headers.post['Content-Type'] = 'application/json';
+    axios.defaults.headers.put['Content-Type'] = 'application/json';
 
     axios.interceptors.request.use(
         config => {
@@ -40,28 +41,23 @@ RequestPlugin.install = function (Vue) {
 
     Vue.prototype.$httpDelete = function (url, params) {
         params = params || {};
-        return axios.delete(url + '?' + qs.stringify(params, {
-                arrayFormat: 'repeat',
-                allowDots: true
-            }), {_this: this});
+        let paramString = qs.stringify(params, {
+            arrayFormat: 'repeat',
+            allowDots: true
+        });
+        return axios.delete(paramString ? (url + '?' + paramString) : url, {_this: this});
     };
 
     Vue.prototype.$httpPost = function (url, params) {
         params = params || {};
-        return axios.post(url, qs.stringify(params, {
-            arrayFormat: 'repeat',
-            allowDots: true
-        }), {
+        return axios.post(url, params, {
             _this: this
         });
     };
 
     Vue.prototype.$httpPut = function (url, params) {
         params = params || {};
-        return axios.put(url, qs.stringify(params, {
-            arrayFormat: 'repeat',
-            allowDots: true
-        }), {
+        return axios.put(url, params, {
             _this: this
         });
     };
