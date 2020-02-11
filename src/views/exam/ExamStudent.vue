@@ -2,33 +2,21 @@
     <section class="e-main">
         <div class="e-header">选择考生</div>
 
-        <el-alert class="mt2" type="info">
-            <span slot="title">{{ examInfo.Name }}</span>
-            <span>考试时间：{{ examInfo.date }}</span>
-            <span class="ml1">文科 {{ examInfo.date }}</span>
-            <span>考试时间：{{ examInfo.date }}</span>
-        </el-alert>
+        <Alert class="mt2">
+            {{ examInfo.Name }}
+            <template slot="desc">
+                <span>考试时间：{{ examInfo.date }}</span>
+                <span class="ml1"> {{ examInfo.date }}</span>
+                TODO
+            </template>
+        </Alert>
 
-        <el-tabs @tab-click="onTabClick"
-                 v-model="active"
-                 class="mt2"
-                 type="card"
-                 tab-position="left">
-            <el-tab-pane v-for="clazz in classes" :key="clazz.id" :name="clazz.id">
-                <span slot="label">{{ clazz.name }}</span>
-                <el-table v-loading="!clazz.loaded"
-                          :data="clazz.candidates"
-                          border
-                          stripe
-                          height="420"
-                          size="mini">
-                    <el-table-column type="selection" width="55"/>
-                    <el-table-column prop="code" label="考号" width="180"/>
-                    <el-table-column prop="date" label="学号" width="180"/>
-                    <el-table-column prop="date" label="姓名"/>
-                </el-table>
-            </el-tab-pane>
-        </el-tabs>
+        <Table :loading="loading"
+               class="mt1"
+               @on-selection-change="onSelectionChange"
+               :columns="columns"
+               :data="students" max-height="500">
+        </Table>
 
         <div style="text-align: center" class="mt2">
             <el-button type="primary"
@@ -45,11 +33,12 @@
     export default {
         data () {
             return {
-                active: '',  // 当前选中的班级
+                loading: false,
                 examInfo: {},
-                classes: [],
-                btnDisabled: true,
-                btnLoading: false
+                students: [],
+                columns: [],
+                btnLoading: false,
+                btnDisabled: true
             }
         },
         created () {
@@ -61,48 +50,75 @@
                 this.$httpGet(`/api/exam/${this.examId}`)
                     .then(res => {
                         this.examInfo = res;
-                        this.loadClasses();
+                        this.loadStudents();
                     });
             },
-            loadClasses () {
-                this.$httpGet(`/api/school/${this.examInfo.SchoolID}/classes`)
-                    .then(res => {
-                        console.log(res.map(i => {
-                            return {Name: i.Name, ParentFirmID: i.ParentFirmID, AutoID: i.AutoID}
-                        }));
-                        this.classes = [
-                            {id: '1', name: '1班', candidates: [], loaded: false},
-                            {id: '2', name: '2班', candidates: [], loaded: false},
-                            {id: '3', name: '3班', candidates: [], loaded: false},
-                            {id: '4', name: '4班', candidates: [], loaded: false},
-                            {id: '5', name: '超级赛亚人班', candidates: [], loaded: false},
-                        ];
-                    });
+            loadStudents () {
+                this.loading = true;
 
+                Promise.all([
+                    this.$httpGet(`api/exam/${this.examId}/candidates`),
+                    this.$httpGet(`/api/school/${this.examInfo.SchoolID}/students`)
+                ]).then(res => {
+                    let selected = res[0];
+                    let all = res[1];
 
-//                this.active = this.classes[0].id;
-//                this.loadCandidates(this.active);
-            },
-            loadCandidates (classId) {
-                let clazz = this.classes.find(item => item.id === classId);
-                if (clazz.loaded) {
-                    return;
-                }
-                // TODO
-                setTimeout(() => {
-                    clazz.loaded = false;
-                    clazz.candidates = [
-                        {code: classId},
+                    // 设置初始已经选中的考生
+                    let setSelected = function (item) {
+                        for (let i = 0, len = selected.length; i < len; ++i) {
+                            if (selected[i].StudentID === item.AutoID) {
+                                item._checked = true;
+                            }
+                        }
+                    };
+                    for (let i = 0, len = all.length; i < len; ++i) {
+                        setSelected(all[i]);
+                    }
+
+                    // 创建列表的 filters 数组
+                    let filters = this.$collection.nest()
+                        .key(i => i.ClassName)
+                        .entries(all)
+                        .map(i => {
+                            return {label: i.key, value: i.key};
+                        });
+
+                    // columns
+                    this.columns = [
+                        {type: 'selection', width: 60, align: 'center'},
+                        {
+                            title: '班级', key: 'ClassName', sortable: true, width: 180,
+                            filters: filters,
+                            filterMethod (value, row) {
+                                return row.ClassName.indexOf(value) > -1;
+                            }
+                        },
+                        {title: '姓名', key: 'Name', sortable: true, width: 120},
+                        {title: '班级注册号', key: 'RollNo', sortable: true, minWidth: 220},
                     ];
-                    clazz.loaded = true;
-                }, 400);
+
+                    this.students = all;
+                    this.loading = false;
+                });
             },
-            onTabClick () {
-                this.loadCandidates(this.active);
+            onSelectionChange (selection) {
+                this.candidates = selection;
+                this.btnDisabled = !(this.candidates && this.candidates.length);
             },
             onStudentSelected () {
+                let data = this.candidates.map(c => {
+                    return {
+                        "Name": c.Name,
+                        "RollNo": c.RollNo,
+                        "StudentID": c.AutoID
+                    };
+                });
                 this.btnLoading = true;
-                // TODO
+                this.$httpPut(`/api/exam/${this.examId}/candidates`, data)
+                    .then(() => {
+                        this.btnLoading = false;
+                        window.location.href = `./exam-list.html`;
+                    });
             }
         }
     }

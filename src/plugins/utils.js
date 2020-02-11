@@ -1,6 +1,11 @@
+import * as collection from  'd3-collection';
+
 let UtilsPlugin = {};
 
 UtilsPlugin.install = function (Vue) {
+
+    // 引入 d3.js 库里的集合相关方法，很实用的库
+    Vue.prototype.$collection = collection;
 
     /**
      * 深克隆一个 JS 对象

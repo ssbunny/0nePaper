@@ -127,22 +127,15 @@
                        :total="page.TotalCount"/>
 
         <SubjectSelector ref="subjectSelector" @ok="onSubjectSelected"/>
-        <StudentSelector ref="studentSelector" @ok="onStudentSelected"/>
     </section>
 </template>
 
 
 <script>
-    // 扫描进度 = ScanCount / CandidateCount
-    // 上传进度 = UploadCount / ScanCount
-    // 切割进度 = CuttingCount / UploadCount
-    // 阅卷进度 = MarkingCount / TaskCount
-
     import SubjectSelector from '../../components/SubjectSelector.vue';
-    import StudentSelector from '../../components/StudentSelector.vue';
 
     export default {
-        components: {SubjectSelector, StudentSelector},
+        components: {SubjectSelector},
         data () {
             return {
                 query: {
@@ -220,9 +213,9 @@
                         this.$refs.subjectSelector.show(selected, true);
                     });
             },
-            onAddCandidate(e, exam) {
+            onAddCandidate (e, exam) { // 增加考生
                 e.stopPropagation();
-                this.$refs.studentSelector.show();
+                window.location.href = `./exam-student.html?e=${exam.AutoID}`;
             },
             onSubjectSelected (boxes) {
                 this.$httpPut(`/api/exam/${this._currentExam.AutoID}/subjects`, boxes.add)
@@ -231,10 +224,7 @@
                         this.loadSubjectList(this._currentExam.AutoID);
                     });
             },
-            onStudentSelected () {
-
-            },
-            onDelete(e, exam) {
+            onDelete (e, exam) {
                 e.stopPropagation();
                 this.$confirm('确定要删除该考试信息吗?', '警告', {
                     type: 'warning'
@@ -246,28 +236,28 @@
                 });
             },
 
-            onCurrentPageChange(PageNumber) {
+            onCurrentPageChange (PageNumber) {
                 this.query.PageNumber = PageNumber;
                 this.loadExams();
             },
-            onCreateExam() {
+            onCreateExam () {
                 window.location.href = `./exam-creation.html?s=${this.query.SchoolID}`;
             },
             onSubjectOperation ({subject, operation}) {
                 this['on' + operation](subject);
             },
             // ------------------------------------------------------- 科目操作
-            onStartCut(subject) {
+            onStartCut(subject) {// TODO
             },
-            onStopCut(subject) {
+            onStopCut(subject) {// TODO
             },
-            onResetCut(subject) {
+            onResetCut(subject) {// TODO
             },
-            onRedoStatistics(subject) {
+            onRedoStatistics(subject) {// TODO
             },
             onDeleteSubject(subject) {
                 this.$httpDelete(`/api/exam/subject/${subject.AutoID}`)
-                    .then(res => {
+                    .then(() => {
                         this.loadSubjectList(subject.ExamID);
                         this.$message({type: 'success', message: '删除成功!'});
                     });

@@ -1,4 +1,5 @@
 <template>
+    <!-- 这个页面暂时没用 -->
     <el-dialog title="选择考生" :visible.sync="isShow" width="990px">
         <el-tabs @tab-click="onTabClick"
                  v-model="active"
@@ -62,9 +63,9 @@
                 setTimeout(() => {
                     clazz.loaded = false;
                     clazz.candidates = [
-                        {code: classId},
-                        {code: classId},
-                        {code: classId},
+                        {code: classId, id: classId + 'a'},
+                        {code: classId, id: classId + 'b'},
+                        {code: classId, id: classId + 'c'},
                     ];
                     clazz.loaded = true;
                 }, 400);
@@ -73,7 +74,7 @@
                 this.loadCandidates(this.active);
             },
             onSubmit () {
-//                this.$emit('ok', boxes);
+                this.$emit('ok', boxes);
                 this.isShow = false;
             },
             onCansel () {
